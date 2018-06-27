@@ -17,36 +17,59 @@ public class MillionUtilsTest {
 
     private static JavaSparkContext sc;
 
+    private static final double[] array = new double[1000_000];
+    private static final List<Double> list = new ArrayList<>(1000_000);
+
     @BeforeClass
-    public static void initSpark() {
+    public static void init() {
         SparkConf conf = new SparkConf().setMaster("local").setAppName("Same number and index");
         sc = new JavaSparkContext(conf);
-    }
-
-    @Test
-    public void getFirstNumberWithSameIndexList() {
-        List<Double> list = new ArrayList<>();
-        for (int i = 0; i < 1000_000; i++) {
-            list.add(getNumberByAlg(i));
-        }
-        double numberWithSameIndex = MillionUtils.getFirstNumberWithSameIndexSpark(list, sc);
-        assertEquals(EXPECTED, numberWithSameIndex, 0.0);
-    }
-
-    @Test
-    public void getFirstNumberWithSameIndexArray() {
-        double[] array = new double[1000_000];
 
         for (int i = 0; i < 1000_000; i++) {
             double number = getNumberByAlg(i);
             array[i] = number;
         }
 
+        for (int i = 0; i < 1000_000; i++) {
+            list.add(getNumberByAlg(i));
+        }
+
+    }
+
+    private static double getNumberByAlg(int number) {
+        return (number - 1000) * 2.5;
+    }
+
+    @Test
+    public void getFirstNumberWithSameIndex_List() {
+        double numberWithSameIndex = MillionUtils.getFirstNumberWithSameIndexSpark(list, sc);
+        assertEquals(EXPECTED, numberWithSameIndex, 0.0);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void getNonCrossingNumber_List() {
+        List<Double> wrongList = new ArrayList<>(1000_000);
+        for (int i = 0; i < 1000_000; i++) {
+            wrongList.add(i + 2.0);
+        }
+
+        MillionUtils.getFirstNumberWithSameIndexSpark(wrongList, sc);
+    }
+
+    @Test
+    public void getFirstNumberWithSameIndex_Array() {
         double numberWithSameIndex = MillionUtils.getFirstNumberWithSameIndexSpark(array, sc);
         assertEquals(EXPECTED, numberWithSameIndex, 0.0);
     }
 
-    private double getNumberByAlg(int number) {
-        return (number - 1000) * 2.5;
+    @Test(expected = UnsupportedOperationException.class)
+    public void getNonCrossingNumber_Array() {
+        double[] array = new double[1000_000];
+        for (int i = 0; i < 1000_000; i++) {
+            double number = i + 2.0;
+            array[i] = number;
+        }
+
+        MillionUtils.getFirstNumberWithSameIndexSpark(array, sc);
     }
 }
