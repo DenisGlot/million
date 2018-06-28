@@ -1,8 +1,8 @@
 package com.denisgl;
 
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ public class MillionUtilsTest {
 
     @BeforeClass
     public static void init() {
-        SparkConf conf = new SparkConf().setMaster("local").setAppName("Same number and index");
-        sc = new JavaSparkContext(conf);
+//        SparkConf conf = new SparkConf().setMaster("local").setAppName("Same number and index");
+//        sc = new JavaSparkContext(conf);
 
         for (int i = 0; i < 1000_000; i++) {
             double number = getNumberByAlg(i);
@@ -41,12 +41,28 @@ public class MillionUtilsTest {
     }
 
     @Test
+    public void getNumberWithSameIndexByIndex_List() {
+        double numberWithSameIndex = MillionUtils.getNumberWithSameIndex(list);
+        assertEquals(EXPECTED, numberWithSameIndex, 0.0);
+    }
+
+    @Test
+    public void getNumberWithSameIndexByIndex_Array() {
+        double numberWithSameIndex = MillionUtils.getNumberWithSameIndex(array);
+        assertEquals(EXPECTED, numberWithSameIndex, 0.0);
+    }
+
+    //Search with spark
+
+    @Test
+    @Ignore
     public void getFirstNumberWithSameIndex_List() {
         double numberWithSameIndex = MillionUtils.getFirstNumberWithSameIndexSpark(list, sc);
         assertEquals(EXPECTED, numberWithSameIndex, 0.0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    @Ignore
     public void getNonCrossingNumber_List() {
         List<Double> wrongList = new ArrayList<>(1000_000);
         for (int i = 0; i < 1000_000; i++) {
@@ -57,12 +73,14 @@ public class MillionUtilsTest {
     }
 
     @Test
+    @Ignore
     public void getFirstNumberWithSameIndex_Array() {
         double numberWithSameIndex = MillionUtils.getFirstNumberWithSameIndexSpark(array, sc);
         assertEquals(EXPECTED, numberWithSameIndex, 0.0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    @Ignore
     public void getNonCrossingNumber_Array() {
         double[] array = new double[1000_000];
         for (int i = 0; i < 1000_000; i++) {

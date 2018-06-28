@@ -12,6 +12,43 @@ import java.util.List;
 
 public class MillionUtils {
 
+    public static double getNumberWithSameIndex(List<Double> list) {
+        return getNumberWithSameIndex(list, 0, list.size() - 1);
+    }
+
+    private static double getNumberWithSameIndex(List<Double> list, int start, int end) {
+        int half = (start + end) / 2;
+        Double element = list.get(half);
+
+        if (half == element.intValue()) {
+            return element;
+        } else if (half < element.intValue()) {
+            return getNumberWithSameIndex(list, start, --half);
+        } else {
+            return getNumberWithSameIndex(list, ++half, end);
+        }
+    }
+
+    public static double getNumberWithSameIndex(double[] array) {
+        return getNumberWithSameIndex(array, 0, array.length - 1);
+    }
+
+    private static double getNumberWithSameIndex(double[] array, int start, int end) {
+        int half = (start + end) / 2;
+
+        if (half == (int) array[half]) {
+            return array[half];
+        } else if (array[half] > half) {
+            return getNumberWithSameIndex(array, start, half - 1);
+        } else {
+            return getNumberWithSameIndex(array, half + 1, end);
+        }
+    }
+
+
+    //Search with spark
+
+
     public static double getFirstNumberWithSameIndex(double[] array) {
         return getFirstNumberWithSameIndexSpark(array, null);
     }
